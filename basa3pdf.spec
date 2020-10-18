@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['basa3pdf.py'],
-             pathex=['C:\\Users\\efrenbg1\\Desktop\\docx2pdf.basa'],
+             pathex=['C:\\Users\\efrenbg1\\ownCloud\\Proyectos\\basa3pdf'],
              binaries=[],
              datas=[('app.ico', '.')],
              hiddenimports=[],

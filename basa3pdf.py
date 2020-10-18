@@ -8,6 +8,7 @@ import os
 import traceback
 from tkinter import messagebox
 from docx2pdf import convert
+from win32com import client
 import pythoncom
 
 done = False
@@ -18,29 +19,61 @@ def task(file):
     global done, title
 
     pythoncom.CoInitialize()
+    excel = client.Dispatch("Excel.Application")
 
     if not file.endswith('.basa'):
-        done = True
-        messagebox.showerror(
-            message="No se encuentra el archivo", title=title)
-        os._exit(1)
+        dialog("No se encuentra el archivo")
 
     try:
         directory = file[:file.rindex('.basa')]
-        docx = directory + ".docx"
-        pdf = directory + ".pdf"
+    except Exception as e:
+        dialog("No se puede abrir el archivo:", e)
 
-        shutil.copy2(file, docx)
-        convert(docx, output_path=pdf)
-        os.remove(docx)
+    try:
+        if file.endswith('.xlsx.basa'):
+            pdf = directory[:-5] + ".pdf"
+            clean(pdf)
+            wb = excel.Workbooks.Open(file)
+            ws = wb.Worksheets[0]
+            ws.Visible = 1
+            ws.ExportAsFixedFormat(0, pdf)
+            wb.Close()
+            excel.Quit()
+        else:
+            docx = directory + ".docx"
+            pdf = directory + ".pdf"
+            clean(pdf)
+            shutil.copy2(file, docx)
+            convert(docx, output_path=pdf)
+            os.remove(docx)
         os.startfile(pdf, 'open')
         os._exit(1)
     except Exception as e:
-        done = True
+        excel.Quit()
+        dialog("No se puede abrir el archivo:", e)
+
+
+def dialog(msg, e=None):
+    done = True
+    if e != None:
         traceback.print_exc()
-        messagebox.showerror(
-            message="No se puede abrir el archivo:\n\n" + str(e), title=title)
-        os._exit(1)
+        msg += "\n\n" + str(e)
+    messagebox.showerror(message=msg, title=title)
+    os._exit(1)
+
+
+def clean(pdf):
+    try:
+        os.remove(pdf)
+        return
+    except:
+        pass
+    try:
+        stat = os.stat(file + ".pdf")
+        if stat:
+            dialog("¡Hay un archivo con el mismo nombre!")
+    except:
+        pass
 
 
 root = tk.Tk()
