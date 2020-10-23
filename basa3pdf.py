@@ -30,8 +30,9 @@ def task(file):
         dialog("No se puede abrir el archivo:", e)
 
     try:
-        if file.endswith('.xlsx.basa'):
-            pdf = directory[:-5] + ".pdf"
+        i = directory.find(".xlsx")
+        if i > -1:
+            pdf = directory[:i] + directory[i+5:] + ".pdf"
             clean(pdf)
             wb = excel.Workbooks.Open(file)
             ws = wb.Worksheets[0]
