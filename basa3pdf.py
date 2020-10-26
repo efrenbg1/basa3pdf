@@ -31,6 +31,7 @@ def task(file):
 
     try:
         i = directory.find(".xlsx")
+        j = directory.find(".docx")
         if i > -1:
             pdf = directory[:i] + directory[i+5:] + ".pdf"
             clean(pdf)
@@ -40,13 +41,15 @@ def task(file):
             ws.ExportAsFixedFormat(0, pdf)
             wb.Close()
             excel.Quit()
-        else:
-            docx = directory + ".docx"
-            pdf = directory + ".pdf"
+        elif j > -1:
+            docx = directory[:j] + directory[j+5:] + ".docx"
+            pdf = directory[:j] + directory[j+5:] + ".pdf"
             clean(pdf)
             shutil.copy2(file, docx)
             convert(docx, output_path=pdf)
             os.remove(docx)
+        else:
+            dialog("No se encuentra el archivo")
         os.startfile(pdf, 'open')
         os._exit(1)
     except Exception as e:
