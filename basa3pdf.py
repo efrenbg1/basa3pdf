@@ -10,60 +10,83 @@ from tkinter import messagebox
 from docx2pdf import convert
 from win32com import client
 import pythoncom
+import tempfile
+import time
 
 done = False
-title = "Gestión | Conversor PDF"
+title = "basa 3.0 | Conversor PDF"
+temp = ""
 
 
 def task(file):
-    global done, title
-
-    pythoncom.CoInitialize()
-    excel = client.Dispatch("Excel.Application")
+    global done, title, temp
 
     if not file.endswith('.basa'):
-        dialog("No se encuentra el archivo")
+        fatal("No se encuentra el archivo")
 
     try:
         directory = file[:file.rindex('.basa')]
     except Exception as e:
-        dialog("No se puede abrir el archivo:", e)
+        fatal("No se puede abrir el archivo:", e)
+
+    temp = os.path.join(tempfile.gettempdir(), "basa3pdf")
+    if not os.path.exists(temp):
+        os.makedirs(temp)
 
     try:
         i = directory.find(".xlsx")
         j = directory.find(".docx")
+        k = directory.rfind("\\")
         if i > -1:
-            pdf = directory[:i] + directory[i+5:] + ".pdf"
-            clean(pdf)
-            wb = excel.Workbooks.Open(file)
-            ws = wb.Worksheets[0]
-
-            # Fix title and visibility
-            ws.PageSetup.PrintTitleRows = "$4:$4"
-            ws.Visible = 1
-            wb.Saved = True
-
-            # Convert to PDF
-            ws.ExportAsFixedFormat(0, pdf)
-            wb.Close()
-            excel.Quit()
+            outFile = directory[k+1:i] + directory[i+5:] + ".pdf"
+            outFile = os.path.join(temp, outFile)
+            xlsx(file, outFile)
         elif j > -1:
-            docx = directory[:j] + directory[j+5:] + ".docx"
-            pdf = directory[:j] + directory[j+5:] + ".pdf"
-            clean(pdf)
-            shutil.copy2(file, docx)
-            convert(docx, output_path=pdf)
-            os.remove(docx)
+            inFile = directory[k+1:j] + directory[j+5:] + ".docx"
+            inFile = os.path.join(temp, inFile)
+            outFile = directory[k+1:j] + directory[j+5:] + ".pdf"
+            outFile = os.path.join(temp, outFile)
+            shutil.copy2(file, inFile)
+            docx(inFile, outFile)
         else:
-            dialog("No se encuentra el archivo")
-        os.startfile(pdf, 'open')
+            fatal("No se encuentra el archivo")
+        os.startfile(outFile, 'open')
+        clean()
         os._exit(1)
     except Exception as e:
+        fatal("No se puede abrir el archivo:", e)
+
+
+def docx(inFile, outFile):
+    pythoncom.CoInitialize()
+    convert(inFile, output_path=outFile)
+
+
+def xlsx(inFile, outFile):
+    pythoncom.CoInitialize()
+    excel = client.Dispatch("Excel.Application")
+
+    try:
+        wb = excel.Workbooks.Open(inFile)
+        ws = wb.Worksheets[0]
+
+        # Fix title and visibility
+        ws.Visible = 1
+        if ws.PageSetup.PrintTitleRows == "":
+            ws.PageSetup.PrintTitleRows = "$4:$4"
+        wb.Saved = True
+
+        # Convert to PDF
+        ws.ExportAsFixedFormat(0, outFile)
+        wb.Close()
         excel.Quit()
-        dialog("No se puede abrir el archivo:", e)
+    except Exception as e:
+        raise e  # Let the main thread handle the Exception
+    finally:
+        excel.Quit()
 
 
-def dialog(msg, e=None):
+def fatal(msg, e=None):
     global done
     done = True
     if e != None:
@@ -73,23 +96,21 @@ def dialog(msg, e=None):
     os._exit(1)
 
 
-def clean(pdf):
-    try:
-        os.remove(pdf)
-        return
-    except:
-        pass
-    try:
-        stat = os.stat(file + ".pdf")
-        if stat:
-            dialog("¡Hay un archivo con el mismo nombre!")
-    except:
-        pass
+def clean():
+    now = time.time()
+    for f in os.listdir(temp):
+        f = os.path.join(temp, f)
+        if os.stat(f).st_mtime < now - 2*60:
+            try:
+                os.remove(f)
+            except:
+                pass
 
 
 root = tk.Tk()
 root.title(title)
 
+path = ""
 if getattr(sys, 'frozen', False):
     path = os.path.dirname(sys.executable)
 elif __file__:
