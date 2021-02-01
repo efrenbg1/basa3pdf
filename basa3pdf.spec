@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['basa3pdf.py'],
-             pathex=['C:\\Users\\efrenbg1\\ownCloud\\Proyectos\\basa3pdf'],
+             pathex=['C:\\Users\\efrenbg1\\Desktop\\basa3pdf'],
              binaries=[],
              datas=[('app.ico', '.')],
              hiddenimports=[],
@@ -26,7 +26,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False , icon='app.ico')
+          console=True , icon='app.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

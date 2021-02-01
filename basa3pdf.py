@@ -37,7 +37,13 @@ def task(file):
             clean(pdf)
             wb = excel.Workbooks.Open(file)
             ws = wb.Worksheets[0]
+
+            # Fix title and visibility
+            ws.PageSetup.PrintTitleRows = "$4:$4"
             ws.Visible = 1
+            wb.Saved = True
+
+            # Convert to PDF
             ws.ExportAsFixedFormat(0, pdf)
             wb.Close()
             excel.Quit()
@@ -58,6 +64,7 @@ def task(file):
 
 
 def dialog(msg, e=None):
+    global done
     done = True
     if e != None:
         traceback.print_exc()
