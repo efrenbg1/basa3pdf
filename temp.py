@@ -1,6 +1,5 @@
 import os
 import tempfile
-import time
 from ui import fatal, label
 
 try:
@@ -13,10 +12,12 @@ except Exception as e:
 
 def clean():
     label("Limpiando archivos viejos...")
+    import time
+
     now = time.time()
     for f in os.listdir(temp):
         f = os.path.join(temp, f)
-        if os.stat(f).st_mtime < now - 2*60:
+        if os.stat(f).st_mtime < now - 24*60*60:
             try:
                 os.remove(f)
             except:

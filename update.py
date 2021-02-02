@@ -1,43 +1,59 @@
-import requests
-import wget
-import subprocess
-import os
 from temp import temp
-from ui import label, confirm, spin
+from ui import label, confirm
 
 version = 0.1
+latest = "https://api.github.com/repos/efrenbg1/basa3pdf/releases/latest"
 
 
 def check():
     global version
-    r = requests.get(
-        "https://api.github.com/repos/efrenbg1/basa3pdf/releases/latest")
-    r = r.json()
-    if float(r["tag_name"]) > version:
-        label("Descargando actualización...")
-        url = r["assets"][0]["browser_download_url"]
-        out = os.path.join(temp, r["tag_name"] + ".exe")
-        print(out)
-        wget.download(url, out=out)
 
+    if previousCheck():
+        return
 
-def install():
     label("Buscando actualizaciones...")
-    for f in os.listdir(temp):
-        if not f.endswith(".exe"):
-            continue
-        newv = -1
-        try:
-            newv = float(f[:-4])
-        except:
-            continue
 
-        if newv <= version:
-            continue
+    import requests
+    r = requests.get(latest).json()
 
-        answer = confirm("Actualizar basa3pdf",
-                         "Hay una nueva versión disponible. ¿Instalar ahora?")
-        if answer == "yes":
-            exe = os.path.join(temp, f)
-            subprocess.Popen([exe])
-            os._exit(1)
+    if float(r["tag_name"]) <= version:
+        return
+
+    answer = confirm("Actualizar basa3pdf",
+                     "Hay una nueva versión disponible. ¿Instalar ahora?")
+
+    if answer != "yes":
+        return
+
+    install(r["assets"][0]["browser_download_url"])
+
+
+def previousCheck():
+    from os import path, stat, utime
+    from time import time
+
+    log = path.join(temp, ".update")
+
+    if not path.exists(log):
+        open(log, 'a').close()
+
+    lastcheck = stat(log).st_mtime
+    if lastcheck > time() - 24*60*60:
+        return True
+
+    utime(log)
+    return False
+
+
+def install(url):
+    import os
+    import wget
+
+    label("Descargando actualización...")
+    out = os.path.join(temp, "basa3pdf.exe")
+    wget.download(url, out=out)
+
+    import subprocess
+    label("Instalando actualización...")
+    subprocess.Popen([out])
+    os._exit(1)

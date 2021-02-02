@@ -9,7 +9,7 @@
             "command": "${config:python.pythonPath}\\python.exe",
             "args": [
                 "basa3pdf.py",
-                "C:\\Users\\efrenbg1\\ownCloud\\Proyectos\\basa3pdf\\test\\obras.xlsx.basa"
+                "C:\\Users\\efrenbg1\\Desktop\\basa3pdf\\test\\EA-F-21-0068.docx.basa"
             ]
         },
         {

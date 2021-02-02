@@ -1,9 +1,9 @@
-import traceback
 import tkinter as tk
 from tkinter import messagebox
 from tkinter.ttk import Progressbar
 import os
 import sys
+import traceback
 
 title = "basa 3.0 | Conversor PDF"
 spin = True
@@ -46,9 +46,9 @@ def paint():
 
     def spinner():
         global spin
-        p.step()
         if spin:
-            root.after(10, spinner)
+            p.step()
+        root.after(10, spinner)
 
     root.after(10, spinner)
 

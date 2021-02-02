@@ -1,13 +1,19 @@
-from docx2pdf import convert
-from win32com import client
-import pythoncom
-import shutil
-import os
 from ui import fatal, label
 from temp import temp, clean
+import update
 
 
 def task(file):
+    try:
+        update.check()
+    except Exception as e:
+        print(e)
+        pass
+
+    label("Abriendo archivo...")
+
+    import os
+
     if len(file) < 2:
         fatal("No se encuentra el archivo")
     file = file[1]
@@ -30,29 +36,36 @@ def task(file):
             outFile = os.path.join(temp, outFile)
             xlsx(file, outFile)
         elif j > -1:
-            inFile = directory[k+1:j] + directory[j+5:] + ".docx"
-            inFile = os.path.join(temp, inFile)
             outFile = directory[k+1:j] + directory[j+5:] + ".pdf"
             outFile = os.path.join(temp, outFile)
-            shutil.copy2(file, inFile)
-            docx(inFile, outFile)
+            docx(file, outFile)
         else:
             fatal("No se encuentra el archivo")
         os.startfile(outFile, 'open')
         clean()
-        import update
-        update.check()
         os._exit(1)
     except Exception as e:
         fatal("No se puede abrir el archivo:", e)
 
 
 def docx(inFile, outFile):
+    from win32com import client
+    import pythoncom
+
     pythoncom.CoInitialize()
-    convert(inFile, output_path=outFile)
+
+    word = client.Dispatch("Word.Application")
+
+    doc = word.Documents.Open(inFile)
+
+    doc.SaveAs(outFile, FileFormat=17)
+    doc.Close()
 
 
 def xlsx(inFile, outFile):
+    from win32com import client
+    import pythoncom
+
     pythoncom.CoInitialize()
     excel = client.Dispatch("Excel.Application")
 

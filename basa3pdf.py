@@ -1,18 +1,11 @@
 
 import ui
-import sys
-import threading
+from sys import argv
+from threading import Thread
 from convert import task
-import update
 
 ui.paint()
 
-update.install()
-
-ui.label("Abriendo archivo...")
-
-thread = threading.Thread(target=task, args=(sys.argv, ))
-thread.start()
-
+thread = Thread(target=task, args=(argv, )).start()
 
 ui.loop()
