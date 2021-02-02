@@ -1,6 +1,6 @@
-from ui import fatal, label
-from temp import temp, clean
-import update
+from src.ui import fatal, label
+from src.temp import temp, clean
+import src.update as update
 
 
 def task(file):

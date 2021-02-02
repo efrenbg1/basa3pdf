@@ -1,6 +1,6 @@
 import os
 import tempfile
-from ui import fatal, label
+from src.ui import fatal, label
 
 try:
     temp = os.path.join(tempfile.gettempdir(), "basa3pdf")

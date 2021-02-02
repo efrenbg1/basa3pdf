@@ -1,5 +1,5 @@
-from temp import temp
-from ui import label, confirm
+from src.temp import temp
+from src.ui import label, confirm
 
 version = 0.1
 latest = "https://api.github.com/repos/efrenbg1/basa3pdf/releases/latest"

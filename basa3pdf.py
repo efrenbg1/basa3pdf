@@ -1,11 +1,9 @@
-
-import ui
 from sys import argv
 from threading import Thread
-from convert import task
+from src import ui, convert
 
 ui.paint()
 
-thread = Thread(target=task, args=(argv, )).start()
+thread = Thread(target=convert.task, args=(argv, )).start()
 
 ui.loop()

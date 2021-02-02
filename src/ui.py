@@ -16,6 +16,7 @@ if getattr(sys, 'frozen', False):
     path = os.path.dirname(sys.executable)
 elif __file__:
     path = os.path.dirname(__file__)
+    path = os.path.dirname(path[:-1])
 icon = os.path.join(path, 'app.ico')
 root.iconbitmap(icon)
 root.geometry("250x100")
