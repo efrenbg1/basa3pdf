@@ -1,8 +1,9 @@
 from src.temp import temp
 from src.ui import label, confirm
 
-version = 0.1
-latest = "https://api.github.com/repos/efrenbg1/basa3pdf/releases/latest"
+checkVersion = 0.1
+checkURL = "https://api.github.com/repos/efrenbg1/basa3pdf/releases/latest"
+checkInterval = 24*60*60
 
 
 def check():
@@ -14,9 +15,9 @@ def check():
     label("Buscando actualizaciones...")
 
     import requests
-    r = requests.get(latest).json()
+    r = requests.get(checkURL).json()
 
-    if float(r["tag_name"]) <= version:
+    if float(r["tag_name"]) <= checkVersion:
         return
 
     answer = confirm("Actualizar basa3pdf",
@@ -38,7 +39,7 @@ def previousCheck():
         open(log, 'a').close()
 
     lastcheck = stat(log).st_mtime
-    if lastcheck > time() - 24*60*60:
+    if lastcheck > time() - checkInterval:
         return True
 
     utime(log)
