@@ -1,5 +1,4 @@
-import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, Label, Tk
 from tkinter.ttk import Progressbar
 import os
 import sys
@@ -9,7 +8,7 @@ title = "basa 3.0 | Conversor PDF"
 spin = True
 
 # Start window and set icon
-root = tk.Tk()
+root = Tk()
 root.title(title)
 path = ""
 if getattr(sys, 'frozen', False):
@@ -28,11 +27,11 @@ def paint():
     global _label
 
     # Top space
-    tpre = tk.Label(root, text='')
+    tpre = Label(root, text='')
     tpre.pack()
 
     # Main text
-    t = tk.Label(root, text="Cargando...", font=('helvetica', 12, 'bold'))
+    t = Label(root, text="Cargando...", font=('helvetica', 12, 'bold'))
     t.pack()
     _label = t
 
@@ -42,7 +41,7 @@ def paint():
     p.pack()
 
     # Bottom space
-    tpost = tk.Label(root, text='')
+    tpost = Label(root, text='')
     tpost.pack()
 
     def spinner():

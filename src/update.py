@@ -1,7 +1,7 @@
 from src.temp import temp
 from src.ui import label, confirm
 
-checkVersion = 0.1
+checkVersion = 0.3
 checkURL = "https://api.github.com/repos/efrenbg1/basa3pdf/releases/latest"
 checkInterval = 24*60*60
 
